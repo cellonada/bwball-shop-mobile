@@ -1,4 +1,4 @@
-T U G A S 6
+T U G A S 7
 1.Jelaskan apa itu widget tree pada Flutter dan bagaimana hubungan parent-child (induk-anak) bekerja antar widget.
 Widget tree merupakan kumpulan widget yaitu elemen UI seperti teks, tombol, gambar, kolom, baris, dll. Dimana kumpulan widget tersebut saling bertingkat sehingga membentuk struktur seperti pohon, oleh karena itu disebut widget tree
 Parent merupakan widget yang membungkus widget lain serta mengatur letaknya, sedangkan child widget merupakan bagian di dalam parent widget yang berisi konten. Sehingga hubungan anatara Parent-Child widget adalah untuk menemtukan akan seperti apa tampilannya serta perilaku UI yang terbentuk dari widget bersarang.
@@ -38,3 +38,38 @@ Contoh penggunaan dalam metode build yaitu berada pada file main.dart pada class
 
 6.Jelaskan konsep "hot reload" di Flutter dan bagaimana bedanya dengan "hot restart".
 Hot Reload merupakan fitur pada flutter yang dapat digunakan untuk melihat perubahan kode secara instan tanpa kehilangan state aplikasi. Biasanya hot reload digunakan untuk mengubah UI dan mengubah logika kecil di build(). Sedangkan Hot Restrat digunakan dengan memuat ulang seluruh aplikasi tanpa kompilasi penuh tetapi akan mengahpus state aplikassi.
+
+
+T U G A S 8
+1.Jelaskan perbedaan antara Navigator.push() dan Navigator.pushReplacement() pada Flutter. Dalam kasus apa sebaiknya masing-masing digunakan pada aplikasi Football Shop kamu?
+-Navigator.push() digunakan untuk membuka halaman baru di atas halaman yang saat ini sedang dibuka, oleh karena itu terdapat tombol back untuk kembali ke halaman lama. Stack digunakan untuk menumpuk halaman halaman ini, dimana halaman sebelumnya tetap berada di dalam stack
+-Navigator.pushReplacement() digunakan untuk mengganti halaman yang sedang dibuka saat ini dengan halaman baru. Stack juga digunakan untuk menumpuk halaman, namun jika metode push() halaman sebelumnya tetap berada di stack, untuk metode pushReplacement() halaman sebelumnya akan terhapus dari stack sehingga kita tidak dapat kembali ke halaman sebelumnya setelah membuka halaman baru.
+-Navigator.push() cocok digunakan ketika ingin berpindah-pindah halaman, misalnya dari home page ke add product dan sebaliknya (ada tombol back saat add product). Sedangkan Navigator.pushReplacement() cocok digunakan saat ingin berpindah halaman dan tidak perlu kembali, misalnya ketika login maupun logout
+
+
+2.Bagaimana kamu memanfaatkan hierarchy widget seperti Scaffold, AppBar, dan Drawer untuk membangun struktur halaman yang konsisten di seluruh aplikasi?
+Dalam membuat  aplikasi dengan flutter saya memanfaatkan hierarchy widget seperti Scaffold, AppBar, dan Drawer tentunya untuk menjaga tampilan tetap konsisten dan untuk navigasi keseluruhan aplikasi. Dimana struktur hierarchy yang umum digunakan seperti di bawah ini
+-Scaffold sebagai kerangka utama untuk menyediakan struktur dasar agar setiap halaman terlihat konsisten (memiliki layout yang sama)
+-AppBar merupakan bagian atas halaman biasanya berisi Judul seperti "BWBall Shop", tombol navigasi otomatis, hingga beberapa icons
+-Drawer merupakan menu yang berada di samping jika user menekan ikon garis tiga yang berada di AppBar, yaitu mempermudah untuk berganti halaman 
+
+3.Dalam konteks desain antarmuka, apa kelebihan menggunakan layout widget seperti Padding, SingleChildScrollView, dan ListView saat menampilkan elemen-elemen form? Berikan contoh penggunaannya dari aplikasi kamu.
+Beberapa kelebihan menggunakan layout widget saat menampilkan elemen-elemen form adalah
+-Padding untuk memberi jarak antar elemen agar terlihat rapi, tidak terlalu rapat, nyaman untuk di baca, contoh penggunaan di aplikasi saya yaitu "padding: const EdgeInsets.all(12)"
+-SingleChildScrollView digunakan ketika form yang ada lebih panjang dari layar, dengan menggunakan ini user dapat scroll layar ke bawah untuk melihat keseluruhan form, serta bagian form tidak akan terpotong. Contoh penggunaan di aplikasi saya yaitu
+"SingleChildScrollView(
+  padding: const EdgeInsets.all(12),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      TextFormField(...),
+      TextFormField(...),
+      DropdownButtonFormField(...),
+    ],
+  ),
+),"
+-ListView merupakan perpaduan antara column dengan SingleChildScrollView dimana dengan ListView kita dapat scroll secara otomatis tanpa perlu membungkus dengan SingleChildScrollView. Contoh kegunaan di aplikasi saya yaitu untuk membuat halaman My Product
+
+4.Bagaimana kamu menyesuaikan warna tema agar aplikasi Football Shop memiliki identitas visual yang konsisten dengan brand toko?
+Agar tampilan aplikasi saya yakni BWBall Shop memiliki identitas visual yang konsisten dengan brand toko adalah mendeklarasikan tema melalu ThemeDart yang berada di file main.dart, dimana saya telah set berbagai warna mulai dari warna utama, latar belakang, warna pendukung, warna dasarr, hingga warna untuk teksnya.
+
