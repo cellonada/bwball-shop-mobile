@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:bwball_shop/widgets/left_drawer.dart';
+import 'dart:convert';
+import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:bwball_shop/screens/menu.dart';
 
 class ProductFormPage extends StatefulWidget {
   const ProductFormPage({super.key});
@@ -17,6 +21,9 @@ class _ProductFormPageState extends State<ProductFormPage> {
   String _category = "Shoes";
   String _thumbnail = "";
   bool _isFeatured = false;
+  int _stock = 0;          
+  int _rating = 0;         
+  bool _isFavorite = false;
 
   final List<String> _categories = [
     'Shoes',
@@ -27,6 +34,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add New Product'),
@@ -70,6 +78,24 @@ class _ProductFormPageState extends State<ProductFormPage> {
                   if (value == null || value.isEmpty) return "Price cannot be empty!";
                   final num? price = num.tryParse(value);
                   if (price == null || price <= 0) return "Price must be greater than 0!";
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+
+              // ✅ === Stock ===
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: "Stock Quantity",
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) => setState(() => _stock = int.tryParse(value) ?? 0),
+                onSaved: (value) => _stock = int.tryParse(value ?? "0") ?? 0,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return "Stock cannot be empty!";
+                  final stock = int.tryParse(value);
+                  if (stock == null || stock < 0) return "Stock must be 0 or more!";
                   return null;
                 },
               ),
@@ -123,12 +149,33 @@ class _ProductFormPageState extends State<ProductFormPage> {
               ),
               const SizedBox(height: 12),
 
-              // === Featured Product Switch ===
-              SwitchListTile(
-                title: const Text("Mark as Featured Product"),
-                value: _isFeatured,
-                onChanged: (value) => setState(() => _isFeatured = value),
+              // === Rating ===
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: "Product Rating (0-5)",
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) => setState(() => _rating = int.tryParse(value) ?? 0),
+                onSaved: (value) => _rating = int.tryParse(value ?? "0") ?? 0,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return "Rating cannot be empty!";
+                  final rating = int.tryParse(value);
+                  if (rating == null) return "Rating must be a number!";
+                  if (rating < 0 || rating > 5) return "Rating must be between 0-5!";
+                  return null;
+                },
               ),
+              const SizedBox(height: 12),
+              
+              //=== Favorite Product Switch ===
+              SwitchListTile(
+                title: const Text("Mark as Favorite Product"),
+                value: _isFavorite,
+                onChanged: (value) => setState(() => _isFavorite = value),
+              ),
+
+              const SizedBox(height: 20),
 
               // === Save Button ===
               Align(
@@ -137,41 +184,43 @@ class _ProductFormPageState extends State<ProductFormPage> {
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.primary),
                   ),
-                  onPressed: () {
-                    FocusScope.of(context).unfocus(); // unfocus keyboard
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
+                  onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
 
-                      showDialog(
-                        context: context,
-                        builder: (_) => AlertDialog(
-                          title: const Text("Product saved successfully!"),
-                          content: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("Name: $_name"),
-                                Text("Price: Rp${_price.toStringAsFixed(0)}"),
-                                Text("Description: $_description"),
-                                Text("Category: $_category"),
-                                Text("Thumbnail: $_thumbnail"),
-                                Text("Featured: ${_isFeatured ? "Yes" : "No"}"),
-                              ],
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                _formKey.currentState!.reset();
-                              },
-                              child: const Text("OK"),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                  },
+                        final response = await request.postJson(
+                          "http://localhost:8000/create-flutter/",
+                          jsonEncode({
+                            "name": _name,
+                            "price": _price.toInt(),
+                            "description": _description,
+                            "category": _category,
+                            "thumbnail": _thumbnail,
+                            "is_featured": _isFeatured,
+                            "is_favorite": _isFavorite,  
+                            "stock": _stock,          
+                            "rating": _rating,        
+                          }),
+                        );
+
+                        if (context.mounted) {
+                          if (response['status'] == 'success') {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Product successfully saved!")),
+                            );
+
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => MyHomePage()),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Something went wrong, please try again.")),
+                            );
+                          }
+                        }
+                      }
+                    },
                   child: const Text("Save", style: TextStyle(color: Colors.white)),
                 ),
               ),

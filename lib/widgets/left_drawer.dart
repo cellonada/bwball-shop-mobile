@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bwball_shop/screens/product_entry_list.dart';
 import 'package:bwball_shop/screens/menu.dart';
 import 'package:bwball_shop/screens/product_form.dart';
 
@@ -18,7 +19,7 @@ class LeftDrawer extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Football Shop',
+                  'BWBall Shop',
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
@@ -26,7 +27,7 @@ class LeftDrawer extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Belanja perlengkapan bola favoritmu!',
+                  'Buy your favorite football product here!',
                   style: TextStyle(color: Colors.white70),
                 ),
               ],
@@ -34,7 +35,7 @@ class LeftDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.home_outlined),
-            title: const Text('Halaman Utama'),
+            title: const Text('Home Page'),
             onTap: () {
               Navigator.pushReplacement(
                 context,
@@ -44,11 +45,53 @@ class LeftDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.add_box_outlined),
-            title: const Text('Tambah Produk'),
+            title: const Text('Add Product'),
             onTap: () {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => const ProductFormPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.view_module),
+            title: const Text('All Products'),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProductEntryListPage(
+                    filterType: 'all',
+                  ),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.shopping_bag),
+            title: const Text('My Products'),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProductEntryListPage(
+                    filterType: 'my', 
+                  ),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.favorite),
+            title: const Text('Favorite Products'),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProductEntryListPage(
+                    filterType: 'favorite', 
+                  ),
+                ),
               );
             },
           ),
